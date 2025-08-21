@@ -19,7 +19,7 @@ def todo_query(db: Session):
 
 @app.post("/todos/", response_model=schemas.Todo)
 def create_todo(todo: schemas.TodoCreate, db: Session = Depends(get_db)):
-    db_todo = models.Todo(**todo.dict())
+    db_todo = models.Todo(**todo.model_dump())
     db.add(db_todo)
     db.commit()
     db.refresh(db_todo)
