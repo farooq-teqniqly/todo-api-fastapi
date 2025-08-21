@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 class TodoBase(BaseModel):
     title: str
@@ -13,6 +13,17 @@ class TodoUpdate(TodoBase):
 class Todo(TodoBase):
     id: int
     completed: bool
+
+    class Config:
+        orm_mode = True
+
+
+class UserCreate(BaseModel):
+    email: EmailStr
+
+class User(BaseModel):
+    id: int
+    email: EmailStr
 
     class Config:
         orm_mode = True

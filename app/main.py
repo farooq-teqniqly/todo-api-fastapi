@@ -61,3 +61,26 @@ def delete_todo(todo_id: int, db: Session = Depends(get_db)):
     db.commit()
 
     return {"message": "Deleted successfully"}
+
+@app.get("/users/{user_id}", response_model=schemas.User, name="read_user")
+def get_user(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(models.User).get(user_id)
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return user
+
+@app.post("/users/", response_model=schemas.User, status_code=status.HTTP_201_CREATED)
+def create_user(user: schemas.UserCreate, request: Request, response: Response, db: Session = Depends(get_db)):
+    db_user = db.query(models.User).filter_by(email=user.email).first()
+
+    if db_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+
+    new_user = models.User(**user.model_dump())
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    response.headers["Location"] = str(request.url_for("read_user", user_id=new_user.id))
+    return new_user

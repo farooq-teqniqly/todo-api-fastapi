@@ -7,7 +7,7 @@ def test_create_todo(client, fake):
     assert data["completed"] is False
 
     todo_id = data["id"]
-    assert todo_id != 0
+    assert todo_id > 0
     want_location = f"http://testserver/todos/{todo_id}"
     assert response.headers["Location"] == want_location
 
@@ -24,8 +24,9 @@ def test_get_todos(client, fake):
 
 def test_get_todo(client, fake):
     want_title = fake.sentence(2)
-    client.post("/todos/", json={"title": want_title})
-    todo_id = 1
+    response = client.post("/todos/", json={"title": want_title})
+    data = response.json()
+    todo_id = data["id"]
     response = client.get(f"/todos/{todo_id}")
     assert response.status_code == 200
     data = response.json()
@@ -45,8 +46,9 @@ def test_update_todo_title(client, fake):
 
 def test_set_todo_completed(client, fake):
     want_title = fake.sentence(2)
-    client.post("/todos/", json={"title": want_title})
-    todo_id = 1
+    response = client.post("/todos/", json={"title": want_title})
+    data = response.json()
+    todo_id = data["id"]
     response = client.put(f"/todos/{todo_id}", json={"completed": True})
     assert response.status_code == 200
     data = response.json()
