@@ -208,3 +208,5 @@ __marimo__/
 
 .idea/
 todos.db
+
+docker-compose/container-data/
