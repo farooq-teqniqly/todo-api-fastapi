@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Request, Response, status
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app import models, schemas
@@ -15,19 +15,20 @@ def get_db():
 def todo_query(db: Session):
     return db.query(models.Todo)
 
-@app.post("/todos/", response_model=schemas.Todo)
-def create_todo(todo: schemas.TodoCreate, db: Session = Depends(get_db)):
+@app.post("/todos/", response_model=schemas.Todo, status_code=status.HTTP_201_CREATED)
+def create_todo(todo: schemas.TodoCreate, request: Request, response: Response, db: Session = Depends(get_db)):
     db_todo = models.Todo(**todo.model_dump())
     db.add(db_todo)
     db.commit()
     db.refresh(db_todo)
+    response.headers["Location"] = str(request.url_for("read_todo", todo_id=db_todo.id))
     return db_todo
 
 @app.get("/todos/", response_model=list[schemas.Todo])
 def read_todos(db: Session = Depends(get_db)):
     return todo_query(db).all()
 
-@app.get("/todos/{todo_id}", response_model=schemas.Todo)
+@app.get("/todos/{todo_id}", response_model=schemas.Todo, name="read_todo")
 def read_todo(todo_id: int, db: Session = Depends(get_db)):
     todo = todo_query(db).get(todo_id)
 

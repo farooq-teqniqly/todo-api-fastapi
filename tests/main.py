@@ -1,10 +1,16 @@
 def test_create_todo(client, fake):
     want_title = fake.sentence(2)
     response = client.post("/todos/", json={"title": want_title})
-    assert response.status_code == 200
+    assert response.status_code == 201
     data = response.json()
     assert data["title"] == want_title
     assert data["completed"] is False
+
+    todo_id = data["id"]
+    assert todo_id != 0
+    want_location = f"http://testserver/todos/{todo_id}"
+    assert response.headers["Location"] == want_location
+
 
 def test_get_todos(client, fake):
     want_title = fake.sentence(2)
