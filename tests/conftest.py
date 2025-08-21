@@ -1,4 +1,5 @@
 import pytest
+from faker import Faker
 from testcontainers.postgres import PostgresContainer
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -7,7 +8,13 @@ from app.main import app, get_db
 from app.database import Base
 from fastapi.testclient import TestClient
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
+def fake():
+    f = Faker()
+    Faker.seed(206)
+    return f
+
+@pytest.fixture(scope="function")
 def postgres_container():
     with PostgresContainer("postgres:17.5") as container:
         container.start()
