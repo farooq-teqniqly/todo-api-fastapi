@@ -14,9 +14,9 @@ jobs:
       postgres:
         image: postgres:17.5
         env:
-          POSTGRES_USER: testuser
-          POSTGRES_PASSWORD: testpass
-          POSTGRES_DB: testdb
+          POSTGRES_USER: dummy
+          POSTGRES_PASSWORD: dummy
+          POSTGRES_DB: dummy
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
