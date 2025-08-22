@@ -31,6 +31,8 @@ jobs:
         pip install -r requirements.txt
     
     - name: Run tests with pytest
+      env:
+        DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy
       run: |
         python -m pytest tests/ -v --tb=short
 
