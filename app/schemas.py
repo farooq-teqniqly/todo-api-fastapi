@@ -15,6 +15,7 @@ class Todo(TodoBase):
     id: int
     completed: bool
     user_id: int
+    url: str | None = None
 
     class Config:
         orm_mode = True

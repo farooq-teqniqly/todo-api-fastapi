@@ -30,8 +30,17 @@ def create_todo(todo: schemas.TodoCreate, request: Request, response: Response, 
     return new_todo
 
 @app.get("/todos/", response_model=list[schemas.Todo])
-def read_todos(db: Session = Depends(get_db)):
-    return todo_query(db).all()
+def read_todos(request: Request, db: Session = Depends(get_db)):
+    db_todos = todo_query(db).all()
+
+    response_todos = []
+
+    for db_todo in db_todos:
+        todo_data = schemas.Todo.model_validate(db_todo.__dict__)
+        todo_data.url = str(request.url_for("read_todo", todo_id=todo_data.id))
+        response_todos.append(todo_data)
+
+    return response_todos
 
 @app.get("/todos/{todo_id}", response_model=schemas.Todo, name="read_todo")
 def read_todo(todo_id: int, db: Session = Depends(get_db)):

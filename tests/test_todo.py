@@ -18,6 +18,7 @@ def test_create_todo(client, fake):
     data = response.json()
     assert data["title"] == want_title
     assert data["completed"] is False
+    assert data["url"] is None
 
     todo_id = data["id"]
     assert todo_id > 0
@@ -37,6 +38,7 @@ def test_get_todos(client, fake):
     assert data[0]["title"] == want_title
     assert data[0]["completed"] is False
     assert data[0]["user_id"] == 1
+    assert data[0]["url"] == f"http://testserver/todos/{user_id}"
 
 def test_get_todo(client, fake):
     want_title = fake.sentence(2)
