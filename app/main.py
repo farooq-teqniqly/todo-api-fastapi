@@ -17,12 +17,17 @@ def todo_query(db: Session):
 
 @app.post("/todos/", response_model=schemas.Todo, status_code=status.HTTP_201_CREATED)
 def create_todo(todo: schemas.TodoCreate, request: Request, response: Response, db: Session = Depends(get_db)):
-    db_todo = models.Todo(**todo.model_dump())
-    db.add(db_todo)
+    user = db.query(models.User).get(todo.user_id)
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    new_todo = models.Todo(**todo.model_dump())
+    db.add(new_todo)
     db.commit()
-    db.refresh(db_todo)
-    response.headers["Location"] = str(request.url_for("read_todo", todo_id=db_todo.id))
-    return db_todo
+    db.refresh(new_todo)
+    response.headers["Location"] = str(request.url_for("read_todo", todo_id=new_todo.id))
+    return new_todo
 
 @app.get("/todos/", response_model=list[schemas.Todo])
 def read_todos(db: Session = Depends(get_db)):

@@ -1,10 +1,11 @@
 from pydantic import BaseModel, EmailStr
+from typing import List
 
 class TodoBase(BaseModel):
     title: str
 
 class TodoCreate(TodoBase):
-    pass
+    user_id: int
 
 class TodoUpdate(TodoBase):
     title: str | None = None
@@ -13,6 +14,7 @@ class TodoUpdate(TodoBase):
 class Todo(TodoBase):
     id: int
     completed: bool
+    user_id: int
 
     class Config:
         orm_mode = True
@@ -24,6 +26,7 @@ class UserCreate(BaseModel):
 class User(BaseModel):
     id: int
     email: EmailStr
+    todos: List[Todo] = []
 
     class Config:
         orm_mode = True
