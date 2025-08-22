@@ -1,7 +1,10 @@
 from fastapi import FastAPI, HTTPException, Depends, Request, Response, status
 from sqlalchemy.orm import Session
-from app.database import SessionLocal
+from app.database import SessionLocal, engine
 from app import models, schemas
+
+models.Base.metadata.create_all(bind=engine)
+
 app = FastAPI()
 
 def get_db():
