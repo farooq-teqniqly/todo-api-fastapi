@@ -211,3 +211,4 @@ todos.db
 
 docker-compose/container-data/
 test-results.xml
+node_modules
