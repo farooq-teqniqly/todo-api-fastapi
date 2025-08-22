@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 from typing import List
 
 class TodoBase(BaseModel):
@@ -17,8 +17,8 @@ class Todo(TodoBase):
     user_id: int
     url: str | None = None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
+
 
 
 class UserCreate(BaseModel):
@@ -29,5 +29,4 @@ class User(BaseModel):
     email: EmailStr
     todos: List[Todo] = []
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

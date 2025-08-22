@@ -12,12 +12,9 @@ def get_db():
     finally:
         db.close()
 
-def todo_query(db: Session):
-    return db.query(models.Todo)
-
 @app.post("/todos/", response_model=schemas.Todo, status_code=status.HTTP_201_CREATED)
 def create_todo(todo: schemas.TodoCreate, request: Request, response: Response, db: Session = Depends(get_db)):
-    user = db.query(models.User).get(todo.user_id)
+    user = db.get(models.User, todo.user_id)
 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -31,7 +28,7 @@ def create_todo(todo: schemas.TodoCreate, request: Request, response: Response, 
 
 @app.get("/todos/", response_model=list[schemas.Todo])
 def read_todos(request: Request, db: Session = Depends(get_db)):
-    db_todos = todo_query(db).all()
+    db_todos = db.query(models.Todo).all()
 
     response_todos = []
 
@@ -44,7 +41,7 @@ def read_todos(request: Request, db: Session = Depends(get_db)):
 
 @app.get("/todos/{todo_id}", response_model=schemas.Todo, name="read_todo")
 def read_todo(todo_id: int, db: Session = Depends(get_db)):
-    todo = todo_query(db).get(todo_id)
+    todo = db.get(models.Todo, todo_id)
 
     if not todo:
         raise HTTPException(status_code=404, detail="Todo not found")
@@ -53,7 +50,7 @@ def read_todo(todo_id: int, db: Session = Depends(get_db)):
 
 @app.put("/todos/{todo_id}", response_model=schemas.Todo)
 def update_todo(todo_id: int, update: schemas.TodoUpdate, db: Session = Depends(get_db)):
-    todo = todo_query(db).get(todo_id)
+    todo = db.get(models.Todo, todo_id)
 
     if not todo:
         raise HTTPException(status_code=404, detail="Todo not found")
@@ -66,7 +63,7 @@ def update_todo(todo_id: int, update: schemas.TodoUpdate, db: Session = Depends(
 
 @app.delete("/todos/{todo_id}")
 def delete_todo(todo_id: int, db: Session = Depends(get_db)):
-    todo = todo_query(db).get(todo_id)
+    todo = db.get(models.Todo, todo_id)
 
     if not todo:
         raise HTTPException(status_code=404, detail="Todo not found")
@@ -78,7 +75,7 @@ def delete_todo(todo_id: int, db: Session = Depends(get_db)):
 
 @app.get("/users/{user_id}", response_model=schemas.User, name="read_user")
 def get_user(user_id: int, db: Session = Depends(get_db)):
-    user = db.query(models.User).get(user_id)
+    user = db.get(models.User, user_id)
 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
