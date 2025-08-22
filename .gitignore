@@ -210,3 +210,4 @@ __marimo__/
 todos.db
 
 docker-compose/container-data/
+test-results.xml
